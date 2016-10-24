@@ -115,19 +115,33 @@ main.controller('LoginController', ['$scope', '$http', function($scope, $http){
     console.log("makiing login");
     console.log($scope.form);
 
+
+    /*
     var data = $.param({
          json: JSON.stringify({
              name: $scope.form.user,
              pasw: $scope.form.password
          })
+    });*/
+
+    //  console.log(data.json);
+
+    $http({
+          method : 'POST',
+          url    : '/api/login',
+          data   : $scope.form,
+          headers: {'Content-Type': 'application/json; charset=utf-8 '}
+    }).success(function (response) {
+          console.log("no error!");
+          console.log(response);
+    }).error(function(response){
+          console.log("error");
+          console.log(response);
     });
 
 
 
-    $http.post("/login", data).success(function(data, status) {
-          alert(data);
-          console.log("ma");
-    })
+    //$http.post("/login", data)
 
 
 
