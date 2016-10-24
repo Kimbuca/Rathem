@@ -1,0 +1,121 @@
+<div class="wrapper">
+      <div class="header">
+          <div class="header header-filter" style="background-image: url('http://www.wallpapereast.com/static/images/dice-hd-wallpapers.jpg'); background-size: cover; background-position: top center;">
+              <div class="container" style="height:425px">
+                <div class="section text-center section-landing">
+                  <h1  class="title"  style="padding-top:50px;" style="color:white"> Rathem </h1>
+                  <p>El lugar más honesto para evaluar e informate sobre cualquier producto.</p>
+                </div>
+              </div>
+          </div>
+      </div>
+      <!-- you can use the class main-raised if you want the main area to be as a page with shadows -->
+      <div class="main main-raised">
+        <div class="container">
+          <div class="section text-center">
+
+            <!-- here you can add your content -->
+            <h3 class="title">Selecciona un Categoria</h3>
+            <div class="row">
+              <button class="btn btn-info" ng-click="setTab(1)" ng-class="{'btn-success':isSet(1)}">Tecnología</button>
+              <button class="btn btn-info" ng-click="setTab(2)" ng-class="{'btn-success':isSet(2)}">Casa y Hogar</button>
+              <button class="btn btn-info" ng-click="setTab(3)" ng-class="{'btn-success':isSet(3)}">Guardaropa</button>
+              <button class="btn btn-info" ng-click="setTab(4)" ng-class="{'btn-success':isSet(4)}">Alimentos</button>
+              <button class="btn btn-info" ng-click="setTab(5)" ng-class="{'btn-success':isSet(5)}">Software</button>
+            </div>
+            <div class="row" ng-model="tab"  ng-change="tab">
+                <div class="col-md-3 col-md-offset-1 dropdown">
+                  <a class="btn btn-simple dropdown-toggle" data-toggle="dropdown">
+                    	Product #1
+                    	<b class="caret"></b>
+                	</a>
+                	<ul class="dropdown-menu">
+                		<li ng-click="setProduct(1,product)" ng-repeat="product in selectedListProducts"><a>{{product}}</a></li>
+                  </ul>
+                </div>
+
+                <div class="col-md-3 col-md-offset-4 dropdown">
+                  <a class="btn btn-simple dropdown-toggle" data-toggle="dropdown">
+                    	Product #2
+                    	<b class="caret"></b>
+                	</a>
+                  <ul class="dropdown-menu" >
+                		<li ng-click="setProduct(2,producto)" ng-repeat="producto in selectedListProducts"><a>{{producto}}</a></li>
+                  </ul>
+
+                  <!-- FAIL
+                  <div class="form-group">
+                    {{asyncSelected}}
+                    {{products}}
+                    <input type="text" ng-model="asyncSelected" placeholder="Producto#2" uib-typeahead="product for product in products | filter:$viewValue | limitTo:4"
+                          typeahead-no-results="noResults" typeahead-editable="false" class="form-control" >
+                    -->
+
+
+
+                 </div>
+
+                 <div clas="row">
+                   <div class="col-md-3 col-md-offset-1">
+                     <h4>{{p1}}</h4>
+                   </div>
+
+                   <div class="col-md-3 col-md-offset-4">
+                     <h4>{{p2}}</h4>
+
+                   </div>
+
+                 </div>
+                  <!--
+
+
+                  <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Producto #2">
+                  </div>
+                  <a href="#" class="btn btn-simple dropdown-toggle" data-toggle="dropdown">
+                    	Product #2
+                    	<b class="caret"></b>
+                	</a>
+                	<ul class="dropdown-menu">
+
+                		<li><a href="#">Action</a></li>
+                		<li><a href="#">Another action</a></li>
+                		<li><a href="#">Something else here</a></li>
+                  </ul>-->
+              </div>
+            </div>
+
+
+            <div class="row" style="height:10px">
+            </div>
+
+            <div class="row">
+                <div class="col-md-2 col-md-offset-5">
+                    <a href="/compare" class="btn btn-primary btn-round btn-danger" ng-click="makeComparison()"> Hacer Comparación </a>
+                </div>
+            </div>
+          </div>
+
+        <!--
+        <div class="section text-center">
+          <div class="row">
+              <h3 class="text-center title">Te interesa sugerir un producto?</h3>
+              <h4 class="text-center description">A </h4>
+
+          </div>
+
+        </div>-->
+
+        <div class="section landing-section">
+              <div class="row">
+                  <div class="col-md-8 col-md-offset-2">
+                      <h3 class="text-center title">Que es Rathem?</h3>
+          <h4 class="text-center description">Rathem es una aplicación que te permite evaluar productos, cualquiera puede colaborar
+          a partir de lo evaluado podemos analizar datos y realizar compras mas inteligente, animate a probar esta herramienta
+          en colaboración con otras personitas. </h4>
+
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
