@@ -13,7 +13,6 @@ app.get('/', function (req, res, next) {
 	res.sendFile('static/index.html');
 });
 
-
 var router = express.Router();
 
 //pefijo maestro para login :D
