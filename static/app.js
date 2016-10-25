@@ -20,6 +20,9 @@ main.config(['$locationProvider', '$routeProvider',
         }).when('/login',{
           templateUrl:'/views/login/login.html',
           controller: 'LoginController',
+        }).when('/signup',{
+          templateUrl:'/views/signup/signup.html',
+          controller: 'SignupController',
         })
         .otherwise({redirectTo: '/'});
 
@@ -166,3 +169,87 @@ main.controller('LoginController', ['$scope', '$http', function($scope, $http){
 
 
 //LoginController.$inject = ['todas las directivas y modulos que deseee']
+
+//Controlador de la forma para reseñas
+main.controller('FormController', function(){
+  
+  this.review = {};
+
+  this.addReview = function(phone){
+    phone.reviews.push(this.review);
+    this.review = {};
+  };
+
+});
+
+//Controlador de la forma para temporal
+main.controller('FormControllerT', function(){
+  
+  this.review = {};
+  this.reviewsT = {};
+
+  this.addReview = function(phone){
+    this.reviewsT.push(this.review);
+    this.review = {};
+  };
+
+  this.sendReview = function(phone){
+    angular.forEach(reviewsT, function(rev){
+      phone.reviews.push(rev);
+    });
+
+    this.reviewsT = {};
+    this.review = {};
+  };
+
+});
+
+main.controller('ListController', function(){
+
+  //id de item seleccionado y su index o age en este caso
+ this.selectedItem = "asus-laptop-rog";
+ this.index = 1;
+
+ this.isSelected = function(item){
+  return item === this.selectedItem; 
+ };
+
+ this.setSelect = function(item, age){
+  this.selectedItem = item;
+  this.index = age;
+ };
+
+ this.phones = [
+    {
+        "age": 0, 
+        "id": "motorola-xoom-with-wi-fi", 
+        "imageUrl": "img/motorola-xoom-with-wi-fi.1.jpg", 
+        "name": "Motorola XOOM\u2122 with Wi-Fi", 
+        "snippet": "The Next, Next Generation\r\n\r\nExperience the future with Motorola XOOM with Wi-Fi, the world's first tablet powered by Android 3.0 (Honeycomb).",
+        "reviews":[
+          {
+            body: "Such a good model",
+            author: "kim@itesm.mx"
+          }
+        ]
+    }, 
+    {
+        "age": 1, 
+        "id": "asus-laptop-rog", 
+        "imageUrl": "http://pngimg.com/upload/laptop_PNG5938.png", 
+        "name": "Asus - Laptop ROG GL552VW-CN704T", 
+        "snippet": "Todo el almacenamiento y la velocidad que necesita con 1 TB de almacenamiento en disco duro tiene la velocidad y el almacenamiento necesario. Almacenar todo lo que necesita, y cumplir con su deseo de velocidad. Con una gran pantalla de 15.6'', LED Back-lit, Ultra Slim 300nits, FHD 1920x1080 16:9. Audio de alta fidelidad cristalina con la mejor tecnología. Sistema operativo Windows 10.",
+        "reviews":[
+          {
+            body: "Buena computadora para trabajar en programas de renderizado.",
+            author: "Cesar@itesm.mx"
+          },
+          {
+            body: "Demasiado pesada, provoca dolor de espalda después de traerla durante la tarde.",
+            author: "Roberto@itesm.mx"
+          }
+        ]
+    }
+];
+
+});

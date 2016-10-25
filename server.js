@@ -13,7 +13,6 @@ app.get('/', function (req, res, next) {
 
 });
 
-
 var router = express.Router();
 //pefijo maestro para login :D
 app.use('/api/login', require('./app/router/login'));
