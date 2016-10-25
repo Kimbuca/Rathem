@@ -49,7 +49,21 @@ main.config(['$locationProvider', '$routeProvider',
 
 
 
+
+
+
+
+
+
+
+
 main.controller('tabCtrl',  ['$scope', function ($scope, comparison){
+
+
+
+    if(localStorage.getItem('username') != null){
+      console.log("ya hay un valor");
+    }
 
     $scope.tab = 0;
     $scope.p1 ="";
@@ -106,25 +120,29 @@ main.controller('tabCtrl',  ['$scope', function ($scope, comparison){
 
 
 
-//// El controlador que se le pasa a la vista del login
-main.controller('LoginController', ['$scope', '$http', function($scope, $http){
+
+
+
+
+
+
+/*
+  -------------------------------------------------
+    CONTROLADOR QUE SE LE PASA A LA VISTA LOGIN
+  -------------------------------------------------
+*/
+main.controller('LoginController', ['$scope', '$http', '$location', function($scope, $http, $location){
 
   $scope.name = 'HOLA';
+  $scope.grant_access = function(){
+    $location.url('/');
+
+  }
+
+
   $scope.login = function(){
 
-    console.log("makiing login");
     console.log($scope.form);
-
-
-    /*
-    var data = $.param({
-         json: JSON.stringify({
-             name: $scope.form.user,
-             pasw: $scope.form.password
-         })
-    });*/
-
-    //  console.log(data.json);
 
     $http({
           method : 'POST',
@@ -134,33 +152,51 @@ main.controller('LoginController', ['$scope', '$http', function($scope, $http){
     }).success(function (response) {
           console.log("no error!");
           console.log(response);
+
+          console.log(response.valid);
+
+          if(!response.valid){
+
+            swal({
+              title: "Error",
+              text: "Nombre de usuario o contraseña incorrecto, intentelo de nuevo",
+              type: "error",
+              confirmButtonText: "OK"
+            });
+          }else {
+              swal({
+                title: "Bienvenido",
+                text: "En un momento te redireccionaremos a la página de inicio",
+                type: "success",
+                showConfirmButton: false,
+                timer: 2500
+              },
+              function(){
+
+
+                swal.close();
+                localStorage.clear();
+                //localStorage.removeItem("name");
+                localStorage.setItem('username', $scope.form.user);
+                console.log(localStorage.getItem('username'));
+                $location.url('/');
+                //$scope.grant_access();
+
+                /*
+                setTimeout(function(){
+
+                   console.log("ve atras");
+                   $window.history.back();
+                }, 500);*/
+              });
+          }
+
     }).error(function(response){
           console.log("error");
           console.log(response);
     });
 
-
-
-    //$http.post("/login", data)
-
-
-
-    /*
-    $http.post('/post', $scope.form, config)
-            .success(function ($scope.form, status, headers, config) {
-                $scope.PostDataResponse = $scope.form;
-            })
-            .error(function ($scope.form, status, header, config) {
-                alert("error!");
-            });
-    /*    var posting = $http({
-            method: 'POST',
-            url: '/post',
-            data: $scope.form,
-            processData: false
-     });*/
   }
-
 
 }]);
 
