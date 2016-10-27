@@ -31,6 +31,9 @@ main.config(['$locationProvider', '$routeProvider',
 
 
 
+
+/*
+
   //factorydata for comunication inbetween views
   main.factory('comparison', function($scope){
       //return the obect
@@ -47,6 +50,36 @@ main.config(['$locationProvider', '$routeProvider',
                   data.selectedCategory = cat;
               }
             };
+  });*/
+
+
+
+
+
+
+  main.service('userService', function() {
+
+        var userData = [
+            {yearSetCount: 0}
+        ];
+
+        return {
+            user:function() {
+                return userData;
+            },
+            setEmail: function(email) {
+                userData.email = email;
+            },
+            getEmail: function() {
+                return userData.email;
+            },
+            setSetCount: function(setCount) {
+                userData.yearSetCount = setCount;
+            },
+            getSetCount: function() {
+                return userData.yearSetCount;
+            }
+        };
   });
 
 
@@ -56,23 +89,13 @@ main.config(['$locationProvider', '$routeProvider',
 
 
 
+main.controller('tabCtrl',  ['$scope', 'userService', function ($scope, userService){
 
 
-
-
-main.controller('tabCtrl',  ['$scope', function ($scope, comparison){
-
-
-
-    if(localStorage.getItem('username') != null){
-      console.log("ya hay un valor");
-    }
 
     $scope.tab = 0;
     $scope.p1 ="";
     $scope.p2 ="";
-    $scope.currentSection = 'Rathem';
-    $scope.compar = comparison;
     //comparison.setCat('dsasadsadasd')
     //$scope.compar.selectedCategory="dfsdfsdsf";
     //$scope.comparison = comparison;
@@ -109,17 +132,27 @@ main.controller('tabCtrl',  ['$scope', function ($scope, comparison){
      };
 
      $scope.isSet = function(currentTab){
-      return $scope.tab === currentTab;
+       console.log(userService.getEmail());
+       $scope.user =  userService.getEmail();
+
+       return $scope.tab === currentTab;
     };
 
+    angular.element(document).ready(function () {
+         console.log(userService.getEmail());
+    });
 
-    $scope.makeComparison = function(){
+    //$scope.brand = 'Rathem';
+    $scope.user =  userService.getEmail();
 
-      //$scope.comparison.p2 = $scope.p2;
-      //$scope.comparison.selectedCategory = $scope.$selectedCategory;
 
-    };
+
+
+
 }]);
+
+
+
 
 
 
@@ -134,13 +167,7 @@ main.controller('tabCtrl',  ['$scope', function ($scope, comparison){
     CONTROLADOR QUE SE LE PASA A LA VISTA LOGIN
   -------------------------------------------------
 */
-main.controller('LoginController', ['$scope', '$http', '$location', function($scope, $http, $location){
-
-  $scope.name = 'HOLA';
-  $scope.grant_access = function(){
-    $location.url('/');
-
-  }
+main.controller('LoginController', ['$scope', '$http', '$location', 'userService', function($scope, $http, $location, userService){
 
 
   $scope.login = function(){
@@ -172,25 +199,31 @@ main.controller('LoginController', ['$scope', '$http', '$location', function($sc
                 text: "En un momento te redireccionaremos a la página de inicio",
                 type: "success",
                 showConfirmButton: false,
-                timer: 2500
+                timer: 2000
               },
               function(){
 
+                //another req
+                $http({
+                      method : 'POST',
+                      url    : '/api/login/session',
+                      data   : $scope.form,
+                      headers: {'Content-Type': 'application/json; charset=utf-8 '}
+                }).success(function (response) {
+
+                      console.log("Received! " +response.userId);
+                      userService.setEmail(response.userId);
+                      console.log("Received! " +userService.getEmail());
+                      //alert("In init userId: " +userService.getEmail());
+
+                });
+
 
                 swal.close();
-                localStorage.clear();
-                //localStorage.removeItem("name");
-                localStorage.setItem('username', $scope.form.user);
-                console.log(localStorage.getItem('username'));
                 $location.url('/');
-                //$scope.grant_access();
+                $scope.$apply();
 
-                /*
-                setTimeout(function(){
 
-                   console.log("ve atras");
-                   $window.history.back();
-                }, 500);*/
               });
           }
 
@@ -206,9 +239,40 @@ main.controller('LoginController', ['$scope', '$http', '$location', function($sc
 
 //LoginController.$inject = ['todas las directivas y modulos que deseee']
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  main.factory('dataShare', function($rootScope){
+    var service = {};
+    service.data = false;
+
+    service.sendData = function(data){
+        this.data = data;
+        $rootScope.$broadcast('data_shared');
+    };
+    service.getData = function(){
+       return this.data;
+    };
+    return service;
+  });
+
+
+
+
 //Controlador de la forma para reseñas
 main.controller('FormController', function(){
-  
+
   this.review = {};
 
   this.addReview = function(phone){
@@ -220,7 +284,7 @@ main.controller('FormController', function(){
 
 //Controlador de la forma para temporal
 main.controller('FormControllerT', function(){
-  
+
   this.review = {};
   this.reviewsT = {};
 
@@ -247,7 +311,7 @@ main.controller('ListController', function(){
  this.index = 1;
 
  this.isSelected = function(item){
-  return item === this.selectedItem; 
+  return item === this.selectedItem;
  };
 
  this.setSelect = function(item, age){
@@ -257,10 +321,10 @@ main.controller('ListController', function(){
 
  this.phones = [
     {
-        "age": 0, 
-        "id": "motorola-xoom-with-wi-fi", 
-        "imageUrl": "img/motorola-xoom-with-wi-fi.1.jpg", 
-        "name": "Motorola XOOM\u2122 with Wi-Fi", 
+        "age": 0,
+        "id": "motorola-xoom-with-wi-fi",
+        "imageUrl": "img/motorola-xoom-with-wi-fi.1.jpg",
+        "name": "Motorola XOOM\u2122 with Wi-Fi",
         "snippet": "The Next, Next Generation\r\n\r\nExperience the future with Motorola XOOM with Wi-Fi, the world's first tablet powered by Android 3.0 (Honeycomb).",
         "reviews":[
           {
@@ -268,12 +332,12 @@ main.controller('ListController', function(){
             author: "kim@itesm.mx"
           }
         ]
-    }, 
+    },
     {
-        "age": 1, 
-        "id": "asus-laptop-rog", 
-        "imageUrl": "http://pngimg.com/upload/laptop_PNG5938.png", 
-        "name": "Asus - Laptop ROG GL552VW-CN704T", 
+        "age": 1,
+        "id": "asus-laptop-rog",
+        "imageUrl": "http://pngimg.com/upload/laptop_PNG5938.png",
+        "name": "Asus - Laptop ROG GL552VW-CN704T",
         "snippet": "Todo el almacenamiento y la velocidad que necesita con 1 TB de almacenamiento en disco duro tiene la velocidad y el almacenamiento necesario. Almacenar todo lo que necesita, y cumplir con su deseo de velocidad. Con una gran pantalla de 15.6'', LED Back-lit, Ultra Slim 300nits, FHD 1920x1080 16:9. Audio de alta fidelidad cristalina con la mejor tecnología. Sistema operativo Windows 10.",
         "reviews":[
           {
