@@ -31,11 +31,18 @@
 
   <script src = "https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.3.3/ui-bootstrap-tpls.js"></script>
   <base href="/">
+
+
+  <!-- ALERTS !--->
+  <script src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="bower_components/sweetalert/dist/sweetalert.css">
+
+
 </head>
 <body ng-controller="tabCtrl">
 
   <!--navbar would need refactoring later to make directive-->
-  <nav class="navbar navbar-transparent navbar-absolute" >
+  <nav class="navbar navbar-transparent navbar-absolute">
       <div class="container" >
           <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -44,7 +51,9 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">Rathem </a>
+            <a class="navbar-brand" href="/"> Rathem </a>
+
+
           </div>
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
