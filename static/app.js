@@ -167,6 +167,33 @@ main.controller('LoginController', ['$scope', '$http', function($scope, $http){
 
 }]);
 
+//// El controlador que se le pasa a la vista del signup
+main.controller('SignupController', ['$scope', '$http', function($scope, $http){
+
+  $scope.name = 'HOLA';
+  $scope.login = function(){
+
+    console.log("making signup");
+    console.log($scope.form);
+
+
+    $http({
+          method : 'POST',
+          url    : '/api/signup',
+          data   : $scope.form,
+          headers: {'Content-Type': 'application/json; charset=utf-8 '}
+    }).success(function (response) {
+          console.log("no error!");
+          console.log(response);
+    }).error(function(response){
+          console.log("error");
+          console.log(response);
+    });
+
+  }
+
+
+}]);
 
 //LoginController.$inject = ['todas las directivas y modulos que deseee']
 
