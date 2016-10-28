@@ -245,14 +245,12 @@ main.controller('LoginController', ['$scope', '$http', '$location', 'userService
 
 
 //// El controlador que se le pasa a la vista del signup
-main.controller('SignupController', ['$scope', '$http', function($scope, $http){
+main.controller('SignupController', ['$scope', '$http', '$location', 'userService', function($scope, $http, $location, userService){
 
-  $scope.name = 'HOLA';
-  $scope.login = function(){
 
-    console.log("making signup");
+  $scope.signup = function(){
+
     console.log($scope.form);
-
 
     $http({
           method : 'POST',
@@ -262,13 +260,37 @@ main.controller('SignupController', ['$scope', '$http', function($scope, $http){
     }).success(function (response) {
           console.log("no error!");
           console.log(response);
+
+          console.log(response.valid);
+
+          if(!response.valid){
+
+            swal({
+              title: "Error",
+              text: "Existio un error al crear el usuario, revisar los campos",
+              type: "error",
+              confirmButtonText: "OK"
+            });
+          }else {
+              swal({
+              title: "Listo",
+              text: "Usuario creado, redireccionando",
+              type: "success",
+              showConfirmButton: false,
+              timer: 2000,
+            },function(){
+              swal.close();
+              $location.url('/');
+              $scope.$apply();
+            });
+          }
+
     }).error(function(response){
           console.log("error");
           console.log(response);
     });
 
   }
-
 
 }]);
 
