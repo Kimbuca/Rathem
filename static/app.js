@@ -360,24 +360,55 @@ main.controller('FormController', ['$rootScope', '$cookieStore', function($rootS
 //Controlador de la forma para temporal
 main.controller('FormControllerT', function(){
 
+  this.getIcon = function(type){
+    if(type){
+      return 'thumb_up';
+    }else{
+      return 'thumb_down';
+    }
+  };
+
   this.review = {};
-  this.reviewsT = {};
+  this.reviewsT = [];
 
   this.addReview = function(phone){
     this.reviewsT.push(this.review);
     this.review = {};
+<<<<<<< HEAD
 
 
+=======
+    this.review.type = true;
+>>>>>>> 5561ef7afe87a97d820d43b66b82d8c9d1dd1890
   };
 
   this.sendReview = function(phone){
-    angular.forEach(reviewsT, function(rev){
-      phone.reviews.push(rev);
+    angular.forEach(this.reviewsT, function(rev){
+      if(rev.body){
+        console.log(rev.body);
+        phone.reviews.push(rev);
+      }
+      
     });
 
-    this.reviewsT = {};
+    
     this.review = {};
+    this.reviewsT = [];
+    this.review.type = true;
   };
+
+});
+
+//Controlador de la puntuacion del usuario
+main.controller('ScorerController', function(){
+
+  this.uScore = 0.0;
+  this.nScore = 0.0;
+
+  this.setScore = function(){
+    this.uScore = this.nScore;
+    console.log(this.uScore);
+  }
 
 });
 
@@ -396,17 +427,31 @@ main.controller('ListController', function(){
   this.index = age;
  };
 
+ this.getIcon = function(type){
+    if(type){
+      return 'thumb_up';
+    }else{
+      return 'thumb_down';
+    }
+  };
+
+  this.getPercentage = function(score){
+    return score * 100 / 5;
+  };
+
  this.phones = [
     {
         "age": 0,
         "id": "motorola-xoom-with-wi-fi",
         "imageUrl": "img/motorola-xoom-with-wi-fi.1.jpg",
         "name": "Motorola XOOM\u2122 with Wi-Fi",
+        "score": "2.1",
         "snippet": "The Next, Next Generation\r\n\r\nExperience the future with Motorola XOOM with Wi-Fi, the world's first tablet powered by Android 3.0 (Honeycomb).",
         "reviews":[
           {
             body: "Such a good model",
-            author: "kim@itesm.mx"
+            //author: "kim@itesm.mx",
+            type: true,
           }
         ]
     },
@@ -415,15 +460,18 @@ main.controller('ListController', function(){
         "id": "asus-laptop-rog",
         "imageUrl": "http://pngimg.com/upload/laptop_PNG5938.png",
         "name": "Asus - Laptop ROG GL552VW-CN704T",
+        "score": "4.8",
         "snippet": "Todo el almacenamiento y la velocidad que necesita con 1 TB de almacenamiento en disco duro tiene la velocidad y el almacenamiento necesario. Almacenar todo lo que necesita, y cumplir con su deseo de velocidad. Con una gran pantalla de 15.6'', LED Back-lit, Ultra Slim 300nits, FHD 1920x1080 16:9. Audio de alta fidelidad cristalina con la mejor tecnología. Sistema operativo Windows 10.",
         "reviews":[
           {
             body: "Buena computadora para trabajar en programas de renderizado.",
-            author: "Cesar@itesm.mx"
+            //author: "Cesar@itesm.mx",
+            type: true,
           },
           {
             body: "Demasiado pesada, provoca dolor de espalda después de traerla durante la tarde.",
-            author: "Roberto@itesm.mx"
+            //author: "Roberto@itesm.mx",
+            type: false,
           }
         ]
     }
