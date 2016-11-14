@@ -1,7 +1,6 @@
 'use strict';
-
-
-var main = angular.module('mainApp', ['ngRoute']);
+angular.module('Authentication', []);
+var main = angular.module('mainApp', ['ngRoute', 'ngCookies',  'Authentication']);
 
 //ngRUTING
 main.config(['$locationProvider', '$routeProvider',
@@ -14,7 +13,8 @@ main.config(['$locationProvider', '$routeProvider',
           templateUrl:'/views/compare/compare.html',
         }).when('/',{
         	 templateUrl:'/views/homepage/homepage.html',
-         	 controller:'tabCtrl'
+         	 controller:'tabCtrl',
+
         }).when('/rating',{
         	templateUrl:'/views/rating/rating.html',
         }).when('/login',{
@@ -27,30 +27,61 @@ main.config(['$locationProvider', '$routeProvider',
         .otherwise({redirectTo: '/'});
 
         $locationProvider.html5Mode(true);
-  }]);
+  }]).run(run);
 
 
 
 
-/*
+  ///////////////// AUTHENTICATION EN FRONTEND /////////////
 
-  //factorydata for comunication inbetween views
-  main.factory('comparison', function($scope){
-      //return the obect
+  run.$inject = ['$rootScope', '$location', '$cookieStore', '$http', 'AuthenticationService', '$window'];
+  function run($rootScope, $location, $cookieStore, $http,  AuthenticationService, $window) {
+        // keep user logged in after page refresh
+        $rootScope.globals = $cookieStore.get('globals') || {};
+        console.log($rootScope.globals);
+        console.log($rootScope.globals.currentUser);
 
-      var data = {
-              selectedCategory: ''
-      };
-      return {
+        $rootScope.brand = 'Rathem';
+        $rootScope.session = false;
 
-              getCat: function () {
-                  return data.selectedCategory
-              },
-              setCat: function (cat) {
-                  data.selectedCategory = cat;
-              }
-            };
-  });*/
+        if ($rootScope.globals.currentUser) {
+            //existe un usuario.
+            $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata; // jshint ignore:line
+            $rootScope.brand = $rootScope.globals.currentUser.username;
+            $rootScope.session = true;
+        }
+
+        $rootScope.logout = function(){
+            AuthenticationService.ClearCredentials();
+            console.log("loggingout ");
+            $window.location.reload();
+
+        };
+
+
+
+
+        /*
+        angular.element(document).ready(function () {
+
+        });
+
+        $rootScope.$on('$locationChangeStart', function (event, next, current) {
+            // redirect to login page if not logged in and trying to access a restricted page
+
+
+            if ($location.path() == '/orders'){
+                $state.go('orders');
+            }
+
+            var restrictedPage = $.inArray($location.path(), ['/login', '/signup']) === -1;
+            var loggedIn = $rootScope.globals.currentUser;
+            if (restrictedPage && !loggedIn) {
+                $location.path('/login');
+            }
+        });*/
+    }
+
 
 
 
@@ -89,8 +120,8 @@ main.config(['$locationProvider', '$routeProvider',
 
 
 
-main.controller('tabCtrl',  ['$scope', 'userService', function ($scope, userService){
-
+main.controller('tabCtrl',  ['$scope', 'userService', '$window',
+function ($scope, userService, $window){
 
 
     $scope.tab = 0;
@@ -132,19 +163,8 @@ main.controller('tabCtrl',  ['$scope', 'userService', function ($scope, userServ
      };
 
      $scope.isSet = function(currentTab){
-       console.log(userService.getEmail());
-       $scope.user =  userService.getEmail();
-
        return $scope.tab === currentTab;
     };
-
-    angular.element(document).ready(function () {
-         console.log(userService.getEmail());
-    });
-
-    //$scope.brand = 'Rathem';
-    $scope.user =  userService.getEmail();
-
 
 
 
@@ -167,7 +187,10 @@ main.controller('tabCtrl',  ['$scope', 'userService', function ($scope, userServ
     CONTROLADOR QUE SE LE PASA A LA VISTA LOGIN
   -------------------------------------------------
 */
-main.controller('LoginController', ['$scope', '$http', '$location', 'userService', function($scope, $http, $location, userService){
+main.controller('LoginController', ['$scope', '$http', '$location', '$rootScope', 'AuthenticationService', '$window', '$route',
+ function($scope, $http, $location, $rootScope, AuthenticationService, $window, $route){
+
+  AuthenticationService.ClearCredentials();
 
 
   $scope.login = function(){
@@ -211,17 +234,19 @@ main.controller('LoginController', ['$scope', '$http', '$location', 'userService
                       headers: {'Content-Type': 'application/json; charset=utf-8 '}
                 }).success(function (response) {
 
-                      console.log("Received! " +response.userId);
-                      userService.setEmail(response.userId);
-                      console.log("Received! " +userService.getEmail());
-                      //alert("In init userId: " +userService.getEmail());
-
+                      console.log("Received! " +response.username);
+                      AuthenticationService.SetCredentials(response.username, response.userId);
                 });
 
 
                 swal.close();
-                $location.url('/');
-                $scope.$apply();
+
+
+                $location.path('/');
+                $rootScope.$apply();
+                //$window.location.href = '/';
+                //$window.location.reload();
+
 
 
               });

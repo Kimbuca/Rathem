@@ -2,8 +2,7 @@
 var express    = require('express');
 var app        = express();
 var bodyParser = require('body-parser');
-var session = require('express-session');
-var path    = require("path");
+var session    = require('express-session');
 var sess;
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -21,18 +20,18 @@ app.use(express.static('static/views'));
 
 //manjeador de urls, sirvelo como estatico
 app.get('/', function (req, res) {
+
 	sess=req.session;
 	console.log(req.session);
 
 	if(sess.userId){
 			//ya hay una session, algo que hacer en homepage?
-			console.log("ya hay session");
+			console.log("ya hay session :D");
 
 	}else{
-			console.log("no hay session");
+			console.log("no hay session :(");
 
 	}
-
 	res.sendFile('static/index.html');
 
 
