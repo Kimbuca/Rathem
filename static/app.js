@@ -37,6 +37,8 @@ main.config(['$locationProvider', '$routeProvider',
   run.$inject = ['$rootScope', '$location', '$cookieStore', '$http', 'AuthenticationService', '$window'];
   function run($rootScope, $location, $cookieStore, $http,  AuthenticationService, $window) {
         // keep user logged in after page refresh
+
+        //ESTA es la parte que te sirve cesar
         $rootScope.globals = $cookieStore.get('globals') || {};
         console.log($rootScope.globals);
         console.log($rootScope.globals.currentUser);
@@ -53,7 +55,6 @@ main.config(['$locationProvider', '$routeProvider',
 
         $rootScope.logout = function(){
             AuthenticationService.ClearCredentials();
-            console.log("loggingout ");
             $window.location.reload();
 
         };
@@ -240,8 +241,6 @@ main.controller('LoginController', ['$scope', '$http', '$location', '$rootScope'
 
 
                 swal.close();
-
-
                 $location.path('/');
                 $rootScope.$apply();
                 //$window.location.href = '/';
@@ -345,16 +344,18 @@ main.controller('SignupController', ['$scope', '$http', '$location', 'userServic
 
 
 //Controlador de la forma para reseñas
-main.controller('FormController', function(){
+main.controller('FormController', ['$rootScope', '$cookieStore', function($rootScope, $cookieStore){
 
   this.review = {};
+  $rootScope.globals = $cookieStore.get('globals') || {};
 
   this.addReview = function(phone){
     phone.reviews.push(this.review);
     this.review = {};
+    console.log($rootScope.globals.currentUser.username);
   };
 
-});
+}]);
 
 //Controlador de la forma para temporal
 main.controller('FormControllerT', function(){
@@ -365,6 +366,8 @@ main.controller('FormControllerT', function(){
   this.addReview = function(phone){
     this.reviewsT.push(this.review);
     this.review = {};
+
+
   };
 
   this.sendReview = function(phone){
