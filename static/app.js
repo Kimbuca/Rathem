@@ -6,16 +6,17 @@ var main = angular.module('mainApp', ['ngRoute', 'ngCookies',  'Authentication']
 main.config(['$locationProvider', '$routeProvider',
       function($locationProvider, $routeProvider){
 
-        //$locationProvider.hashPrefix('!');
+        $locationProvider.hashPrefix('!');
 
-        $routeProvider.when('/compare',{
+        $routeProvider.when('/compare/:cat/:p1&:p2',{
           //individual category view
           templateUrl:'/views/compare/compare.html',
+          controller :'CompareCtrl',
+
         }).when('/',{
         	 templateUrl:'/views/homepage/homepage.html',
          	 controller:'tabCtrl',
-
-        }).when('/rating',{
+        }).when('/rating/:productID',{
         	templateUrl:'/views/rating/rating.html',
         }).when('/login',{
           templateUrl:'/views/login/login.html',
@@ -26,7 +27,7 @@ main.config(['$locationProvider', '$routeProvider',
         })
         .otherwise({redirectTo: '/'});
 
-        $locationProvider.html5Mode(true);
+        //$locationProvider.html5Mode(true);
   }]).run(run);
 
 
@@ -59,36 +60,12 @@ main.config(['$locationProvider', '$routeProvider',
 
         };
 
-
-
-
-        /*
-        angular.element(document).ready(function () {
-
-        });
-
-        $rootScope.$on('$locationChangeStart', function (event, next, current) {
-            // redirect to login page if not logged in and trying to access a restricted page
-
-
-            if ($location.path() == '/orders'){
-                $state.go('orders');
-            }
-
-            var restrictedPage = $.inArray($location.path(), ['/login', '/signup']) === -1;
-            var loggedIn = $rootScope.globals.currentUser;
-            if (restrictedPage && !loggedIn) {
-                $location.path('/login');
-            }
-        });*/
     }
 
 
 
 
-
-
-
+////FAIL
   main.service('userService', function() {
 
         var userData = [
@@ -121,22 +98,82 @@ main.config(['$locationProvider', '$routeProvider',
 
 
 
-main.controller('tabCtrl',  ['$scope', 'userService', '$window',
-function ($scope, userService, $window){
+
+  /*
+      -------------------------------------------------
+        CONTROLADOR DE LA VISTA COMPARE
+      -------------------------------------------------
+  */
+
+main.controller('CompareCtrl', ['$scope', '$http', '$routeParams', function($scope, $http, $routeParams){
+
+    //Received from url, 'routeParams' is a must
+    $scope.category = $routeParams.cat;
+    $scope.product1 = $routeParams.p1;
+    $scope.product2 = $routeParams.p2;
+    $scope.descp1 =  '';
+    $scope.descp2 = '';
+
+
+    //Bring me all information and comentaries about these 2 products
+    // 1) search whole info, it includes average so not worry Cesar handles that
+    // 2)
+    $http({
+        method: 'POST',
+        url   : '/api/compare',
+        data  : {'p1': $scope.product1, 'p2': $scope.product2},
+        headers: {'Content-Type': 'application/json; charset=utf-8 '}
+      }).success(function (response) {
+
+        //console.log(response.data[0]);
+        //console.log(response.data[0].comments[0]);
+
+        //harcodeando y ganando
+        $scope.descp1 = response.data[0].desc;
+        $scope.descp2 = response.data[1].desc;
+
+        $scope.commentsP1 = response.data[0].comments;
+        $scope.commentsP2 = response.data[1].comments;
+        console.log(  $scope.commentsP2[0]);
+
+        $scope.p1ID = response.data[0].id;
+        $scope.p2ID = response.data[1].id;
+
+        // 5.0 -> 100%
+        $scope.percentageP1 = ((response.data[0].avg * 100)/5.0);
+        $scope.percentageP2 = ((response.data[1].avg * 100)/5.0);
+
+      }).error(function(response){
+
+    })
+
+}]);
+
+
+
+
+
+
+
+
+/*
+    -------------------------------------------------
+      CONTROLADOR DE LA VISTA MAIN // TAB
+    -------------------------------------------------
+*/
+
+main.controller('tabCtrl',  ['$scope', '$http', '$window',
+function ($scope, $http, userService, $window){
 
 
     $scope.tab = 0;
     $scope.p1 ="";
     $scope.p2 ="";
-    //comparison.setCat('dsasadsadasd')
-    //$scope.compar.selectedCategory="dfsdfsdsf";
-    //$scope.comparison = comparison;
-    //$scope.compa.selectedCategory = $scope.currentSection;
 
     $scope.tec_products = ['Xperia', 'Iphone', 'Laptop Toshiba', 'Samsung Galaxy', 'Htc', 'Motorola'];
     $scope.home_products = ['Raid', 'Suavitel', 'Aspiradora', 'Masageador', 'Mueble', 'fsdfdf '];
     $scope.allProducts = [{
-                            catName:'Tecnologia',
+                            catName:'Tecnología',
                             inventary: $scope.tec_products
                           }, {
                             catName:'Casa y Hogar',
@@ -144,31 +181,53 @@ function ($scope, userService, $window){
                           }];
 
 
+    $scope.getProductList = function(category){
+
+      $http({
+            method : 'POST',
+            url    : '/api/homepage',
+            data   :  {'cat':category},
+            headers: {'Content-Type': 'application/json; charset=utf-8 '}
+      }).success(function (response) {
+
+            console.log("algo salio muy bien");
+            console.log(response.products);
+            $scope.selectedListProducts = response.products;
+
+
+      }).error(function (response){
+            console.log("algo salio mal");
+      });
+    };
+
     //function that sets dropdowns selection
     $scope.setProduct = function(n, selection){
         if(n!=2){
           $scope.p1 =selection;
+          console.log("selection " +selection);
         }else{
           $scope.p2 =selection;
+          console.log("selection " +selection);
         }
     };
 
      $scope.setTab = function(selectedTab){
        $scope.tab = selectedTab;
-       //console.log(selectedTab);
+       console.log(selectedTab);
        //for the dropdown
-       $scope.selectedListProducts = $scope.allProducts[selectedTab-1].inventary;
+
        $scope.selectedCategory = $scope.allProducts[selectedTab-1].catName;
-       $scope.currentSection = $scope.$selectedCategory;
-       console.log($scope.currentSection);
+       //$scope.currentSection = $scope.$selectedCategory;
+       console.log($scope.selectedCategory);
+       $scope.getProductList($scope.selectedCategory);
+
+
+
      };
 
      $scope.isSet = function(currentTab){
        return $scope.tab === currentTab;
     };
-
-
-
 
 }]);
 
@@ -192,7 +251,6 @@ main.controller('LoginController', ['$scope', '$http', '$location', '$rootScope'
  function($scope, $http, $location, $rootScope, AuthenticationService, $window, $route){
 
   AuthenticationService.ClearCredentials();
-
 
   $scope.login = function(){
 
@@ -374,12 +432,8 @@ main.controller('FormControllerT', function(){
   this.addReview = function(phone){
     this.reviewsT.push(this.review);
     this.review = {};
-<<<<<<< HEAD
 
-
-=======
     this.review.type = true;
->>>>>>> 5561ef7afe87a97d820d43b66b82d8c9d1dd1890
   };
 
   this.sendReview = function(phone){
@@ -388,10 +442,10 @@ main.controller('FormControllerT', function(){
         console.log(rev.body);
         phone.reviews.push(rev);
       }
-      
+
     });
 
-    
+
     this.review = {};
     this.reviewsT = [];
     this.review.type = true;
