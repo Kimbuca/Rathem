@@ -1,10 +1,10 @@
 <div class="wrapper">
       <div class="header">
-          <div class="header header-filter" style="background-color: blue ">
+          <div class="header header-filter" style="background-image: url('http://cdn.wallpapersafari.com/56/63/w4zp3F.jpg'); background-size: cover; background-position: top center;">
               <div class="container" style="height:250px">
                 <div class="section text-center section-landing">
-                  <h1  class="title"  style="padding-top:50px;"> Deja una Reseña</h1>
-                  <p>Esto es otra vista</p>
+                  <h1  class="title"  style="color:#ffeb53;padding-top:50px;"> Deja una Reseña</h1>
+                  
                 </div>
               </div>
           </div>
@@ -16,15 +16,15 @@
 				<div class="row">
 				<!-- Imagen del item de la reseña -->
                     <div class="col-md-8 col-md-offset-2">
-                        <img class="responsive-img" src="{{listCtrl.phones[listCtrl.index].imageUrl}}" style="height:420px; width:650px;padding-top:50px"></img>
+                        <img class="responsive-img" src="http://placehold.it/420x750" style="height:420px; width:750px;padding-top:50px"></img>
                     </div>
                 </div>
 
 				<div class="section text-center section-landing">
 					<div class="row">
 	                    <div class="col-md-8 col-md-offset-2">
-	                        <h2 class="title">{{listCtrl.phones[listCtrl.index].name}}</h2>
-	                        <h5 class="description">{{listCtrl.phones[listCtrl.index].snippet}}</h5>
+	                        <h2 class="title">{{prod.name}}</h2>
+	                        <h5 class="description">{{prod.desc}}</h5>
 	                    </div>
 	                </div>
 				</div>
@@ -42,12 +42,12 @@
 				
 	                <div class="col-md-8 " style="padding-top: 20px;">
 		                <div class="progress">
-							<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{listCtrl.getPercentage(listCtrl.phones[listCtrl.index].score)}}" aria-valuemin="0" aria-valuemax="100" style="width: {{listCtrl.getPercentage(listCtrl.phones[listCtrl.index].score)}}%;">
+							<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{listCtrl.getPercentage(listCtrl.phones[listCtrl.index].score)}}" aria-valuemin="0" aria-valuemax="100" style="width: {{getPercentage(prod.avg)}}%;">
 							</div>
 						</div>
 					</div>
 					<div class="col-md-1" style="padding-top: 10px;">
-						<p>{{listCtrl.phones[listCtrl.index].score}}</p>
+						<p>{{prod.avg}}</p>
 					</div>
 				</div>
 
@@ -57,38 +57,38 @@
 
 					<div class="row">
 	                    <div class="col-md-8 col-md-offset-2">
-	                        <h2 class="title">Tus Comentarios</h2>
+	                        <h2 class="title">Realizar Comentarios</h2>
 	                    </div>
 	                </div>
 	                
 	                <!-- <span>{{listCtrl.phones[listCtrl.index].carrier}}</span> -->
-	                <form name="reviewForm" ng-controller="FormControllerT as formCtrl" ng-submit="formCtrl.addReview(listCtrl.phones[listCtrl.index])">
-	                <blockquote ng-repeat="review in formCtrl.reviewsT">
-						{{review.body}}
-						<i class="material-icons">{{formCtrl.getIcon(review.type)}}</i>
+	                <form name="reviewForm" ng-controller="FormControllerT as formCtrl" ng-submit="addReview()">
+	                <blockquote ng-repeat="rev in reviewsT">
+						{{rev.body}}
+						<i class="material-icons">{{getIcon(rev.type)}}</i>
 					</blockquote>
 	                <!-- live preview -->
 					<blockquote>
-						{{formCtrl.review.body}}
+						{{review.body}}
 						<!-- <footer class="blockquote-footer"><cite>{{formCtrl.review.author}}</cite></footer> -->
-						<i class="material-icons">{{formCtrl.getIcon(formCtrl.review.type)}}</i>
+						<i class="material-icons">{{getIcon(review.type)}}</i>
 					</blockquote>
 
 	                <!-- review form -->
 						<fieldset class="form-group">
-							<textarea class="form-control" ng-model="formCtrl.review.body"></textarea>
+							<textarea class="form-control" ng-model="review.body"></textarea>
 							<!-- <label>Author:</label>
 							<input type="email" class ="form-control" placeholder="email@.com" ng-model="formCtrl.review.author"/> -->
 
 						    <label class="checkbox-inline">
-					            <input type="checkbox" class="hidden" name="revType" ng-model="formCtrl.review.type" ng-init="formCtrl.review.type=true" ng-true-value="true" ng-false-value="false">
-					            <i class="material-icons">{{formCtrl.getIcon(formCtrl.review.type)}}</i>
+					            <input type="checkbox" class="hidden" name="revType" ng-model="review.type" ng-init="review.type='pos'" ng-true-value='"pos"' ng-false-value='"neg"'>
+					            <i class="material-icons">{{getIcon(review.type)}}</i>
 					        </label>
 
 						</fieldset>
 						<fieldset class="form-group">
 							<input type="submit" class="btn btn-primary pull-right" value="Add"/>
-							<button class="btn btn-primary pull-right" ng-click="formCtrl.sendReview(listCtrl.phones[listCtrl.index])">Send</button>
+							<button class="btn btn-primary pull-right" ng-click="sendReview()">Send</button>
 						</fieldset>
 					</form>
 
@@ -96,18 +96,19 @@
 					<div class="row">
 	                    <div class="col-md-8 col-md-offset-2">
 	                        <h2 class="title">Tu Puntuación</h2>
+	                        <h2 class="title" style="color: #9999FF;">{{prod.uscore}}</h2>
 	                    </div>
 	                </div>
 
-	                <form name="scoreForm" ng-controller="ScorerController as sCtrl" ng-submit="sCtrl.setScore()">
-	                	<label>Puntuacion:
-				           	<input type="number" name="input" ng-model="sCtrl.nScore" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.01" min="0" max="5" required />
+	                <form name="scoreForm" ng-controller="ScorerController as sCtrl" ng-submit="setScore(nScore)">
+	                	<label>Modificar: 
+				           	<input type="number" name="input" ng-model="nScore" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.1" min="0" max="5" required />
 						 </label>
 						 <div role="alert">
 					    <span class="error" ng-show="myForm.input.$error.number">
-					      Numero invalido!</span>
+					      Numero invalido</span>
 					  </div>
-					  <input type="submit" class="btn btn-primary pull-right" value="Editar"/>
+					  <input type="submit" class="btn btn-primary pull-right" value="Enviar"/>
 	                </form>
 	                <!-- <textarea class="form-control" placeholder="Place a new comment" rows="5"></textarea>
 
@@ -116,16 +117,16 @@
 	                <div class="section text-center">
 						<div class="row">
 		                    <div class="col-md-8 col-md-offset-2">
-			                       <h3 class="title">Comentarios Realizados</h2>
+			                       <h3 class="title">Tus Comentarios Realizados</h2>
 			                </div>
 			            </div>
 					</div>
 
 
-					<blockquote ng-repeat="review in listCtrl.phones[listCtrl.index].reviews">
-						{{review.body}}
+					<blockquote ng-repeat="rev in prod.comments">
+						{{rev.body}}
 						<!-- <footer class="blockquote-footer"><cite>{{review.author}}</cite></footer> -->
-						<i class="material-icons">{{listCtrl.getIcon(review.type)}}</i>
+						<i class="material-icons">{{getIcon(rev.type)}}</i>
 					</blockquote>
 
 

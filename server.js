@@ -48,6 +48,7 @@ app.use('/api/login', require('./app/router/login'));
 app.use('/api/signup', require('./app/router/signup'));
 app.use('/api/homepage', require('./app/router/homepage'));
 app.use('/api/compare', require('./app/router/compare'));
+app.use('/api/rating', require('./app/router/rating'));
 
 var port = process.env.PORT || 8000;
 app.listen(port);

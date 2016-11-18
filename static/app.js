@@ -18,6 +18,7 @@ main.config(['$locationProvider', '$routeProvider',
          	 controller:'tabCtrl',
         }).when('/rating/:productID',{
         	templateUrl:'/views/rating/rating.html',
+          controller: 'RatingController',
         }).when('/login',{
           templateUrl:'/views/login/login.html',
           controller: 'LoginController',
@@ -465,6 +466,128 @@ main.controller('ScorerController', function(){
   }
 
 });
+
+main.controller('RatingController', ['$rootScope', '$cookieStore', '$scope', '$http', '$routeParams', function($rootScope, $cookieStore, $scope, $http, $routeParams){
+
+    //Received from url, 'routeParams' is a must
+    $scope.pID = $routeParams.productID;
+    $rootScope.globals = $cookieStore.get('globals') || {};
+    $scope.uID = $rootScope.globals.currentUser.userid;
+
+    //Bring me all information and comentaries about these 2 products
+    $http({
+        method: 'POST',
+        url   : '/api/rating',
+        data  : {'rCode': 0, 'id': $scope.pID, 'uid': $scope.uID},
+        headers: {'Content-Type': 'application/json; charset=utf-8 '}
+      }).success(function (response) {
+
+        console.log("Entre a success");
+        console.log(response.product);
+        $scope.prod = response.product;
+
+      }).error(function(response){
+
+
+
+    });
+
+    $scope.getPercentage = function(score){
+      return score * 100 / 5;
+    };
+
+    $scope.getIcon = function(type){
+      if(type == 'pos'){
+        return 'thumb_up';
+      }else{
+        return 'thumb_down';
+      }
+    };
+
+    //Aqui empieza la parte de reviewsT
+
+    $scope.review = {};
+    $scope.reviewsT = [];
+
+    $scope.addReview = function(){
+      //console.log($scope.review.type);
+      $scope.reviewsT.push($scope.review);
+      $scope.review = {};
+
+      $scope.review.type = 'pos';
+    };
+
+    $scope.sendReview = function(){
+      angular.forEach($scope.reviewsT, function(rev){
+        if(rev.body){
+          //console.log(rev.body);
+          ///////phone.reviews.push(rev);
+          $scope.prod.comments.push(rev);
+          //Falta el query!!!!!!!
+
+          //QUERY INSERT cada review
+          //Bring me all information and comentaries about these 2 products
+          $http({
+              method: 'POST',
+              url   : '/api/rating',
+              data  : {'rCode': 2, 'id': $scope.pID, 'uid': $scope.uID, 'content': rev.body, 'type': rev.type},
+              headers: {'Content-Type': 'application/json; charset=utf-8 '}
+            }).success(function (response) {
+
+
+            }).error(function(response){
+
+
+
+          });
+
+
+        }
+
+      });
+
+
+      $scope.review = {};
+      $scope.reviewsT = [];
+      $scope.review.type = 'pos';
+    };
+
+
+    //Aqui empieza la parte de Score
+    $scope.nScore = 0.0;
+
+    $scope.setScore = function(nScore){
+      //console.log(nScore)
+      $scope.prod.uscore = nScore;
+      //console.log("Tu score de user es: "+$scope.prod.uscore);
+      
+      //QUERY
+      //Bring me all information and comentaries about these 2 products
+      $http({
+          method: 'POST',
+          url   : '/api/rating',
+          data  : {'rCode': 1, 'usf': $scope.prod.usfound, 'id': $scope.pID, 'uid': $scope.uID, 'nscore': $scope.prod.uscore},
+          headers: {'Content-Type': 'application/json; charset=utf-8 '}
+        }).success(function (response) {
+
+          console.log("Entre a success");
+          //$scope.prod = response.product;
+          if($scope.prod.usfound == 0){
+            $scope.prod.usfound = 1;
+          }
+
+          console.log("Ahora tu usfound es: " + $scope.prod.usfound);
+
+        }).error(function(response){
+
+
+
+      });
+
+
+    };
+
+}]);
 
 main.controller('ListController', function(){
 
